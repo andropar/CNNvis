@@ -1,4 +1,3 @@
-import enum
 from torchvision.models import alexnet, AlexNet_Weights
 from PIL import Image
 import cv2
@@ -39,7 +38,7 @@ if __name__ == "__main__":
         "https://raw.githubusercontent.com/anishathalye/imagenet-simple-labels/master/imagenet-simple-labels.json"
     ).json()
 
-    cv2.namedWindow("preview")
+    cv2.namedWindow("CNNvis")
     vc = cv2.VideoCapture(0)
 
     if vc.isOpened():  # try to get the first frame
