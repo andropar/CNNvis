@@ -46,6 +46,9 @@ if __name__ == "__main__":
     else:
         rval = False
 
+    frame_ct = 0
+
+    top_probs = []
     while rval:
         rval, frame = vc.read()
 
@@ -56,6 +59,16 @@ if __name__ == "__main__":
         for i, key in enumerate(activation.keys()):
             fmaps = scale(activation[key])
             fmaps = fmaps**0.5
+
+            if len(fmaps.shape) != 1:
+                fmaps = cv2.resize(
+                    fmaps.transpose(1, 2, 0),
+                    (0, 0),
+                    fx=1,
+                    fy=1,
+                    interpolation=cv2.INTER_NEAREST,
+                )
+                fmaps = fmaps.transpose(2, 0, 1)
 
             n_fmaps = fmaps.shape[0]
             fmap_size = fmaps.shape[1] if len(fmaps.shape) == 3 else 1
@@ -98,20 +111,23 @@ if __name__ == "__main__":
         stitched_fmaps[-frame_height:, :frame_width] = scale(frame)
 
         # put predicted labels and probabilities to the right of the stitched fmaps
-        if vc.get(1) % 1000 == 0:
-            probs = probs.detach().numpy().squeeze()
-            top_probs = probs.argsort()[-20:][::-1]
-            for i, prob in enumerate(top_probs):
-                cv2.putText(
-                    stitched_fmaps,
-                    f"{labels[prob]} ({probs[prob]:.3f})",
-                    (total_fmap_width - 200, 20 + i * 20),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5,
-                    (255, 255, 255),
-                )
+        if frame_ct % 30 == 0:
+            probs_np = probs.detach().numpy().squeeze()
+            top_probs = probs_np.argsort()[-20:][::-1]
+
+        for i, prob in enumerate(top_probs):
+            cv2.putText(
+                stitched_fmaps,
+                f"{labels[prob]} ({probs_np[prob]:.3f})",
+                (total_fmap_width - 200, 20 + i * 20),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (255, 255, 255),
+            )
 
         cv2.imshow("preview", stitched_fmaps)
+
+        frame_ct += 1
 
         key = cv2.waitKey(20)
         if key == 27:  # exit on ESC

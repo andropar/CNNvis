@@ -1,0 +1,14 @@
+Flask
+Flask-Cors
+matplotlib
+numpy 
+opencv-python
+pandas
+Pillow
+requests
+scikit-learn
+scipy
+torch
+torch-lucent
+torchvision
+tqdm

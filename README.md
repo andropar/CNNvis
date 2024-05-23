@@ -6,5 +6,5 @@ This is a simple example of how to visualize the activations of a convolutional 
 
 ``` bash
 $ pip install -r requirements.txt
-$ python cnn_vis.py
+$ python real_time_cnnvis.py
 ```
